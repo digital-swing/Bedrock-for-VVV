@@ -35,19 +35,24 @@ then
   composer require wpackagist-plugin/query-monitor
   composer require wpackagist-plugin/regenerate-thumbnails
   composer require wpackagist-plugin/contact-form-7
+  composer require wpackagist-plugin/acf-extended
 
   rm -f .env
-  git clone git@github.com:digital-swing/.env.git .
+  git clone git@github.com:digital-swing/.env.git tempenv
+  mv tempenv/.env .
 
-  git clone git@github.com:digital-swing/movefile.git .
+  git clone git@github.com:digital-swing/movefile.git tempmovefile
+  mv tempmovefile/movefile .
+
+  rm -r tempenv tempmovefile
   eval cd ..
 
   # Start download theme
-  # echo "Downloading Theme"
-  # eval cd public_html/web/app/themes
-  # git clone git@github.com:digital-swing/sage.git $project-theme
-  # eval cd $project-theme
-  # composer install && npm install
+  echo "Downloading Theme"
+  eval cd public_html/web/app/themes
+  git clone git@github.com:digital-swing/sage.git $project-theme
+  eval cd $project-theme
+  composer install && npm install
   # End download theme
 fi
 
