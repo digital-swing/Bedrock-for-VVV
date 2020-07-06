@@ -22,23 +22,23 @@ then
   # TODO: change eval to cd ${VVV_PATH_TO_SITE}/public_html or use mkdir command
   eval cd .. && composer create-project roots/bedrock public_html
 
-  # composer require wpackagist-plugin/safe-svg
-  # composer require wpackagist-plugin/better-wp-security
-  # composer require wpackagist-plugin/comet-cache
-  # composer require wpackagist-plugin/wp-sweep
-  # composer require wpackagist-plugin/ewww-image-optimizer
-  # composer require wpackagist-plugin/imsanity
-  # composer require wpackagist-plugin/host-analyticsjs-local
-  # composer require wpackagist-plugin/akismet
-  # composer require wpackagist-plugin/complianz-gdpr
-  # composer require wpackagist-plugin/query-monitor
-  # composer require wpackagist-plugin/regenerate-thumbnails
-  # composer require wpackagist-plugin/contact-form-7
+  && composer require wpackagist-plugin/safe-svg
+  && composer require wpackagist-plugin/better-wp-security
+  && composer require wpackagist-plugin/comet-cache
+  && composer require wpackagist-plugin/wp-sweep
+  && composer require wpackagist-plugin/ewww-image-optimizer
+  && composer require wpackagist-plugin/imsanity
+  && composer require wpackagist-plugin/host-analyticsjs-local
+  && composer require wpackagist-plugin/akismet
+  && composer require wpackagist-plugin/complianz-gdpr
+  && composer require wpackagist-plugin/query-monitor
+  && composer require wpackagist-plugin/regenerate-thumbnails
+  && composer require wpackagist-plugin/contact-form-7
 
-  # rm -f public_html/.env
-  # git clone git@github.com:digital-swing/.env.git public_html
+  && rm -f public_html/.env
+  && git clone git@github.com:digital-swing/.env.git public_html
 
-  # git clone git@github.com:digital-swing/movefile.git public_html
+  && git clone git@github.com:digital-swing/movefile.git public_html
 
   # Start download theme
   # echo "Downloading Theme"
