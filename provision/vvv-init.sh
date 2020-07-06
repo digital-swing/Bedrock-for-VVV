@@ -25,7 +25,7 @@ then
   # Start download theme
   echo "Downloading Theme"
   eval cd public_html/web/app/themes
-  git clone https://github.com/digital-swing/DS-starter-theme.git $project-theme
+  git clone https://github.com/digital-swing/sage.git $project-theme
   eval cd $project-theme
   composer install && npm install
   # End download theme
