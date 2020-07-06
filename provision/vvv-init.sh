@@ -38,6 +38,7 @@ then
   rm -f public_html/.env
   git clone git@github.com:digital-swing/.env.git public_html
 
+  git clone git@github.com:digital-swing/movefile.git public_html
 
   # Start download theme
   echo "Downloading Theme"
