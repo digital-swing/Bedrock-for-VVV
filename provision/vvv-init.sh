@@ -23,26 +23,37 @@ then
   eval cd .. && composer create-project roots/bedrock public_html
   
   eval cd public_html
-  composer require wpackagist-plugin/safe-svg
+  composer require wpackagist-plugin/acf-extended
+  composer require wpackagist-plugin/akismet
+  composer require wpackagist-plugin/amp
+  composer require wpackagist-plugin/autoptimize
   composer require wpackagist-plugin/better-wp-security
   composer require wpackagist-plugin/comet-cache
-  composer require wpackagist-plugin/wp-sweep
-  composer require wpackagist-plugin/ewww-image-optimizer
-  composer require wpackagist-plugin/imsanity
-  composer require wpackagist-plugin/host-analyticsjs-local
-  composer require wpackagist-plugin/akismet
   composer require wpackagist-plugin/complianz-gdpr
+  composer require wpackagist-plugin/contact-form-7
+  composer require wpackagist-plugin/ewww-image-optimizer
+  composer require wpackagist-plugin/host-analyticsjs-local
+  composer require wpackagist-plugin/imsanity
   composer require wpackagist-plugin/query-monitor
   composer require wpackagist-plugin/regenerate-thumbnails
-  composer require wpackagist-plugin/contact-form-7
-  composer require wpackagist-plugin/acf-extended
+  composer require wpackagist-plugin/safe-svg
+  composer require wpackagist-plugin/wp-sweep
+
+  composer config repositories.acf-pro '{"type": "vcs", "url": "git@github.com:digital-swing/acf-pro.git"}'
+  composer require digital-swing/acf-pro
+
+  composer config repositories.admin-columns-pro '{"type": "vcs", "url": "git@github.com:digital-swing/admin-columns-pro.git"}'
+  composer require digital-swing/admin-columns-pro
+
+  composer config repositories.ac-addon-acf '{"type": "vcs", "url": "git@github.com:digital-swing/ac-addon-acf.git"}'
+  composer require digital-swing/ac-addon-acf
 
   rm -f .env
   git clone git@github.com:digital-swing/.env.git tempenv
   mv tempenv/.env .
 
   git clone git@github.com:digital-swing/movefile.git tempmovefile
-  mv tempmovefile/movefile .
+  mv tempmovefile/movefile.yml .
 
   rm -r tempenv tempmovefile
   eval cd ..
