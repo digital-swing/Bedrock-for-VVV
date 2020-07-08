@@ -38,6 +38,7 @@ then
   composer require wpackagist-plugin/regenerate-thumbnails
   composer require wpackagist-plugin/safe-svg
   composer require wpackagist-plugin/wp-sweep
+  composer require roots/soil
 
   composer config repositories.acf-pro '{"type": "vcs", "url": "git@github.com:digital-swing/acf-pro.git"}'
   composer require digital-swing/acf-pro
