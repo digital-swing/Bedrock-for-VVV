@@ -38,6 +38,9 @@ then
   composer require wpackagist-plugin/regenerate-thumbnails
   composer require wpackagist-plugin/safe-svg
   composer require wpackagist-plugin/wp-sweep
+  composer require wpackagist-plugin/polylang
+  composer require wpackagist-plugin/theme-translation-for-polylang
+  composer require wpackagist-plugin/wp-php-console
   composer require roots/soil
 
   composer config repositories.acf-pro '{"type": "vcs", "url": "git@github.com:digital-swing/acf-pro.git"}'
@@ -49,9 +52,13 @@ then
   composer config repositories.ac-addon-acf '{"type": "vcs", "url": "git@github.com:digital-swing/ac-addon-acf.git"}'
   composer require digital-swing/ac-addon-acf
 
-  rm -f .env
-  git clone git@github.com:digital-swing/.env.git tempenv
-  mv tempenv/.env .
+
+  if cmp --silent .env .env.example
+  then
+    rm -f .env
+    git clone git@github.com:digital-swing/.env.git tempenv
+    mv tempenv/.env .
+  fi
 
   git clone git@github.com:digital-swing/movefile.git tempmovefile
   mv tempmovefile/movefile.yml .
