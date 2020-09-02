@@ -41,6 +41,13 @@ then
   composer require wpackagist-plugin/polylang
   composer require wpackagist-plugin/theme-translation-for-polylang
   composer require wpackagist-plugin/wp-php-console
+  composer require wpackagist-plugin/show-current-template
+  composer require wpackagist-plugin/theme-check
+  composer require wpackagist-plugin/html-editor-syntax-highlighter
+  composer require wpackagist-plugin/wp-nested-pages
+  composer require wpackagist-plugin/stream
+  composer require wpackagist-plugin/goodbye-captcha
+
   composer require roots/soil
 
   composer config repositories.acf-pro '{"type": "vcs", "url": "git@github.com:digital-swing/acf-pro.git"}'
