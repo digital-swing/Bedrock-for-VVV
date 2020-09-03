@@ -34,7 +34,6 @@ then
   composer require wpackagist-plugin/ewww-image-optimizer
   composer require wpackagist-plugin/host-analyticsjs-local
   composer require wpackagist-plugin/imsanity
-  composer require wpackagist-plugin/query-monitor
   composer require wpackagist-plugin/regenerate-thumbnails
   composer require wpackagist-plugin/safe-svg
   composer require wpackagist-plugin/wp-sweep
