@@ -46,6 +46,7 @@ then
   composer require wpackagist-plugin/wp-nested-pages
   composer require wpackagist-plugin/stream
   composer require wpackagist-plugin/goodbye-captcha
+  composer require wpackagist-plugin/nbsp-french
 
   composer require roots/soil
 
