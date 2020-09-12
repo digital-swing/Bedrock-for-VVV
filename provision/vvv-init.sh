@@ -57,7 +57,10 @@ then
   composer require digital-swing/admin-columns-pro
 
   composer config repositories.ac-addon-acf '{"type": "vcs", "url": "git@github.com:digital-swing/ac-addon-acf.git"}'
-  composer require digital-swing/ac-addon-acf
+  composer require digital-swing/ac-addon-acf 
+
+  composer config repositories.ac-addon-acf '{"type": "vcs", "url": "git@github.com:digital-swing/ds-lazy-load.git"}'
+  composer require digital-swing/ds-lazy-load
 
 
   if cmp --silent .env .env.example
