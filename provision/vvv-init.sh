@@ -47,6 +47,7 @@ then
   composer require wpackagist-plugin/stream
   composer require wpackagist-plugin/goodbye-captcha
   composer require wpackagist-plugin/nbsp-french
+  composer require wp-security-audit-log
 
   composer require roots/soil
 
