@@ -1,11 +1,12 @@
 project="${VVV_SITE_NAME}"
-
+DB_NAME=${project//[\\\/\.\<\>\:\"\'\|\?\!\*]/}
 echo "Commencing Bedrock Setup"
 
 # Make a database, if we don't already have one
-echo "Creating database"
-mysql -u root --password=root -e "CREATE DATABASE IF NOT EXISTS $project"
-mysql -u root --password=root -e "GRANT ALL PRIVILEGES ON $project.* TO wp@localhost IDENTIFIED BY 'wp';"
+echo -e " * Creating database '${DB_NAME}' (if it's not already there)"
+mysql -u root --password=root -e "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`"
+echo -e " * Granting the wp user priviledges to the '${DB_NAME}' database"
+mysql -u root --password=root -e "GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO wp@localhost IDENTIFIED BY 'wp';"
 
 # Download Bedrock
 if [ ! -d public_html ]
@@ -20,14 +21,14 @@ then
   echo "Installing Bedrock stack using Composer"
 
   # TODO: change eval to cd ${VVV_PATH_TO_SITE}/public_html or use mkdir command
-  eval cd .. && composer create-project roots/bedrock public_html
+  eval cd .. && noroot composer create-project roots/bedrock public_html
   
   eval cd public_html
 
   echo "{"\""bearer"\"": {"\""composer.admincolumns.com"\"": "\""cacc9610e8a4e69daa792372da987ddd"\""}}" > auth.json
 
-  composer config repositories.starter-theme-packages '{"composer": "vcs", "url": "git@github.com:digital-swing/starter-theme-packages.git"}'
-  composer require digital-swing/starter-theme-packages
+  noroot composer config repositories.starter-theme-packages '{"composer": "vcs", "url": "git@github.com:digital-swing/starter-theme-packages.git"}'
+  noroot composer require digital-swing/starter-theme-packages
 
   if cmp --silent .env .env.example
   then
@@ -47,7 +48,7 @@ then
   eval cd public_html/web/app/themes
   git clone git@github.com:digital-swing/sage.git $project-theme
   eval cd $project-theme
-  composer install && npm install
+  noroot composer install && npm install
   # End download theme
 fi
 
