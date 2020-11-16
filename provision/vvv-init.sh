@@ -35,6 +35,8 @@ then
     rm -f .env
     git clone git@github.com:digital-swing/.env.git tempenv
     mv tempenv/.env .
+    sed -i "s/DB_NAME='example'/DB_NAME='${DB_NAME}'/" .env
+    sed -i "s/WP_HOME='http:\/\/example.test'/WP_HOME='http:\/\/${DB_NAME}.test'/" .env
   fi
 
   git clone git@github.com:digital-swing/movefile.git tempmovefile
