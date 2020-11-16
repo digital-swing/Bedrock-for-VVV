@@ -25,6 +25,46 @@ then
   
   eval cd public_html
 
+
+composer require wpackagist-plugin/acf-extended
+  composer require wpackagist-plugin/akismet
+  composer require wpackagist-plugin/amp
+  composer require wpackagist-plugin/autoptimize
+  composer require wpackagist-plugin/better-wp-security
+  composer require wpackagist-plugin/comet-cache
+  composer require wpackagist-plugin/complianz-gdpr
+  composer require wpackagist-plugin/contact-form-7
+  composer require wpackagist-plugin/ewww-image-optimizer
+  composer require wpackagist-plugin/host-analyticsjs-local
+  composer require wpackagist-plugin/imsanity
+  composer require wpackagist-plugin/regenerate-thumbnails
+  composer require wpackagist-plugin/safe-svg
+  composer require wpackagist-plugin/wp-sweep
+  composer require wpackagist-plugin/polylang
+  composer require wpackagist-plugin/theme-translation-for-polylang
+  composer require wpackagist-plugin/wp-php-console
+  composer require wpackagist-plugin/show-current-template
+  composer require wpackagist-plugin/theme-check
+  composer require wpackagist-plugin/html-editor-syntax-highlighter
+  composer require wpackagist-plugin/wp-nested-pages
+  composer require wpackagist-plugin/stream
+  composer require wpackagist-plugin/goodbye-captcha
+  composer require wpackagist-plugin/nbsp-french
+  composer require wp-security-audit-log
+
+  composer require roots/soil
+
+  composer config repositories.acf-pro '{"type": "vcs", "url": "https://pivvenit.github.io/acf-composer-bridge/composer/v3/wordpress-muplugin/"}'
+  composer require advanced-custom-fields/advanced-custom-fields-pro
+
+  composer config repositories.admin-columns-pro '{"type": "vcs", "url": "https://composer.admincolumns.com"}'
+  composer require admin-columns/admin-columns-pro
+  composer require admin-columns/ac-addon-acf
+
+  composer config repositories.ds-lazy-load '{"type": "vcs", "url": "git@github.com:digital-swing/ds-lazy-load.git"}'
+  composer require digital-swing/ds-lazy-load
+
+
   echo "{"\""bearer"\"": {"\""composer.admincolumns.com"\"": "\""cacc9610e8a4e69daa792372da987ddd"\""}}" > auth.json
 
   noroot composer config repositories.starter-theme-packages '{"type": "vcs", "url": "git@github.com:digital-swing/starter-theme-packages.git"}'
