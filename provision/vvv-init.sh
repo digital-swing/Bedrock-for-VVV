@@ -1,7 +1,7 @@
 project="${VVV_SITE_NAME}"
 DB_NAME=${project//[\\\/\.\<\>\:\"\'\|\?\!\*]/}
 
-DB_PREFIX=$(get_config_value 'db_prefix' 'wp_')
+DB_PREFIX=$(get_config_value 'db_prefix' 'ds_wp_')
 DOMAIN=$(get_primary_host "${VVV_SITE_NAME}".test)
 SITE_TITLE=$(get_config_value 'site_title' "${DOMAIN}")
 WP_LOCALE=$(get_config_value 'locale' 'fr_FR')
@@ -139,6 +139,7 @@ generate_configs(){
     mv tempenv/.env .
     sed -i "s/DB_NAME='example'/DB_NAME='${DB_NAME}'/" .env
     sed -i "s/WP_HOME='http:\/\/example.test'/WP_HOME='http:\/\/${DB_NAME}.test'/" .env
+    sed -i "s/DB_PREFIX='ds_wp_'/DB_PREFIX='${DB_PREFIX}'/" .env
   fi
 
   git clone git@github.com:digital-swing/movefile.git tempmovefile
