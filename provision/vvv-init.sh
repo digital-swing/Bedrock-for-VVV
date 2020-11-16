@@ -27,8 +27,8 @@ then
 
   echo "{"\""bearer"\"": {"\""composer.admincolumns.com"\"": "\""cacc9610e8a4e69daa792372da987ddd"\""}}" > auth.json
 
-  noroot composer config repositories.starter-theme-packages '{"composer": "vcs", "url": "git@github.com:digital-swing/starter-theme-packages.git"}'
-  noroot composer require digital-swing/starter-theme-packages
+  noroot composer config repositories.starter-theme-packages '{"type": "vcs", "url": "git@github.com:digital-swing/starter-theme-packages.git"}'
+  noroot composer require digital-swing/starter-theme-packages:dev-main
 
   if cmp --silent .env .env.example
   then
