@@ -68,6 +68,8 @@ install_wp() {
     noroot wp plugin delete akismet
     noroot wp plugin delete hello
   fi
+  wp package install aaemnnosttv/wp-cli-dotenv-command:^2.0
+  wp dotenv salts generate
   maybe_import_test_content
 }
 
@@ -124,7 +126,6 @@ install_composer_packages(){
   noroot composer config repositories.ds-lazy-load '{"type": "vcs", "url": "git@github.com:digital-swing/ds-lazy-load.git"}'
   noroot composer require digital-swing/ds-lazy-load
 
-
   echo "{"\""bearer"\"": {"\""composer.admincolumns.com"\"": "\""cacc9610e8a4e69daa792372da987ddd"\""}}" > auth.json
 
   noroot composer config repositories.starter-theme-packages '{"type": "vcs", "url": "git@github.com:digital-swing/starter-theme-packages.git"}'
@@ -162,7 +163,6 @@ install_starter_theme(){
     echo "Starter Theme installed"
     # End download theme
   fi
-  
 }
 
 
