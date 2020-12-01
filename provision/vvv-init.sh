@@ -70,6 +70,7 @@ install_wp() {
   fi
   wp package install aaemnnosttv/wp-cli-dotenv-command:^2.0
   wp dotenv salts generate
+  wp post create --post_type=page --post_title='Styleguide' --post_status=publish
   maybe_import_test_content
 }
 
@@ -116,10 +117,10 @@ install_composer_packages(){
 
   noroot composer require roots/soil
 
-  noroot composer config repositories.acf-pro '{"type": "vcs", "url": "https://pivvenit.github.io/acf-composer-bridge/composer/v3/wordpress-muplugin/"}'
+  noroot composer config repositories.acf-pro '{"type": "composer", "url": "https://pivvenit.github.io/acf-composer-bridge/composer/v3/wordpress-muplugin/"}'
   noroot composer require advanced-custom-fields/advanced-custom-fields-pro
 
-  noroot composer config repositories.admin-columns-pro '{"type": "vcs", "url": "https://composer.admincolumns.com"}'
+  noroot composer config repositories.admin-columns-pro '{"type": "composer", "url": "https://composer.admincolumns.com"}'
   noroot composer require admin-columns/admin-columns-pro
   noroot composer require admin-columns/ac-addon-acf
  
@@ -157,7 +158,7 @@ install_starter_theme(){
     else
     # Start download theme
     echo "Downloading Starter Theme"
-    git clone git@github.com:digital-swing/sage.git $project-theme
+    git clone git@github.com:digital-swing/starter-theme.git $project-theme
     eval cd $project-theme
     noroot composer install && yarn install
     echo "Starter Theme installed"
