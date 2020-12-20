@@ -1,12 +1,12 @@
+#!/bin/bash
+
 project="${VVV_SITE_NAME}"
 DB_NAME=${project//[\\\/\.\<\>\:\"\'\|\?\!\*]/}
 
 DB_PREFIX=$(get_config_value 'db_prefix' 'ds_wp_')
 DOMAIN=$(get_primary_host "${VVV_SITE_NAME}".test)
 SITE_TITLE=$(get_config_value 'site_title' "${DOMAIN}")
-WP_LOCALE=$(get_config_value 'locale' 'fr_FR')
 WP_TYPE=$(get_config_value 'wp_type' "single")
-WP_VERSION=$(get_config_value 'wp_version' 'latest')
 
 ADMIN_USER=$(get_config_value 'admin_user' "DigitalSwing")
 ADMIN_PASSWORD=$(get_config_value 'admin_password' "consolidou06")
@@ -23,7 +23,7 @@ setup_database() {
 
 maybe_import_test_content() {
   INSTALL_TEST_CONTENT=$(get_config_value 'install_test_content' "")
-  if [ ! -z "${INSTALL_TEST_CONTENT}" ]; then
+  if [  -n "${INSTALL_TEST_CONTENT}" ]; then
     echo " * Downloading test content from github.com/poststatus/wptest/master/wptest.xml"
     noroot curl -s https://raw.githubusercontent.com/poststatus/wptest/master/wptest.xml > /tmp/import.xml
     echo " * Installing the wordpress-importer"
@@ -43,7 +43,7 @@ install_wp() {
   # Download Bedrock
   echo "Installing Bedrock stack using Composer"
   # TODO: change eval to cd ${VVV_PATH_TO_SITE}/public_html or use mkdir command
-  eval cd .. && noroot composer create-project roots/bedrock public_html
+  eval cd .. && git clone git@github.com:digital-swing/bedrock-ds.git public_html
   echo "Bedrock stack installed using Composer"
 
   echo " * Installing WordPress"
@@ -63,7 +63,7 @@ install_wp() {
     echo " * Multisite install complete"
   fi
   DELETE_DEFAULT_PLUGINS=$(get_config_value 'delete_default_plugins' '')
-  if [ ! -z "${DELETE_DEFAULT_PLUGINS}" ]; then
+  if [ -n "${DELETE_DEFAULT_PLUGINS}" ]; then
     echo " * Deleting the default plugins akismet and hello dolly"
     noroot wp plugin delete akismet
     noroot wp plugin delete hello
@@ -74,66 +74,8 @@ install_wp() {
   maybe_import_test_content
 }
 
-install_composer_packages(){
-  noroot composer require --dev phpstan/phpstan
-  noroot composer require --dev szepeviktor/phpstan-wordpress
-  noroot composer require --dev phpunit/phpunit
-  noroot composer require --dev phpmd/phpmd
-  noroot composer require --dev sebastian/phpcpd
-  noroot composer require --dev sensiolabs/security-checker
-  noroot composer require --dev symplify/easy-coding-standard
-  noroot composer require --dev friendsofphp/php-cs-fixer
-  noroot composer require --dev php-parallel-lint/php-parallel-lint
-  noroot composer require --dev atoum/atoum
-  noroot composer require --dev phpro/grumphp
-  noroot composer require --dev wp-coding-standards/wpcs
-  noroot composer require --dev dealerdirect/phpcodesniffer-composer-installer
-  noroot composer require --dev php-parallel-lint/php-console-highlighter
-  noroot composer require wpackagist-plugin/acf-extended
-  noroot composer require wpackagist-plugin/akismet
-  noroot composer require wpackagist-plugin/amp
-  noroot composer require wpackagist-plugin/autoptimize
-  noroot composer require wpackagist-plugin/better-wp-security
-  noroot composer require wpackagist-plugin/comet-cache
-  noroot composer require wpackagist-plugin/complianz-gdpr
-  noroot composer require wpackagist-plugin/contact-form-7
-  noroot composer require wpackagist-plugin/ewww-image-optimizer
-  noroot composer require wpackagist-plugin/host-analyticsjs-local
-  noroot composer require wpackagist-plugin/imsanity
-  noroot composer require wpackagist-plugin/regenerate-thumbnails
-  noroot composer require wpackagist-plugin/safe-svg
-  noroot composer require wpackagist-plugin/wp-sweep
-  noroot composer require wpackagist-plugin/polylang
-  noroot composer require wpackagist-plugin/theme-translation-for-polylang
-  noroot composer require wpackagist-plugin/wp-php-console
-  noroot composer require wpackagist-plugin/show-current-template
-  noroot composer require wpackagist-plugin/theme-check
-  noroot composer require wpackagist-plugin/html-editor-syntax-highlighter
-  noroot composer require wpackagist-plugin/wp-nested-pages
-  noroot composer require wpackagist-plugin/stream
-  noroot composer require wpackagist-plugin/goodbye-captcha
-  noroot composer require wpackagist-plugin/nbsp-french
-  noroot composer require wp-security-audit-log
-
-  noroot composer require roots/soil
-
-  noroot composer config repositories.acf-pro '{"type": "composer", "url": "https://pivvenit.github.io/acf-composer-bridge/composer/v3/wordpress-muplugin/"}'
-  noroot composer require advanced-custom-fields/advanced-custom-fields-pro
-
-  noroot composer config repositories.admin-columns-pro '{"type": "composer", "url": "https://composer.admincolumns.com"}'
-  noroot composer require admin-columns/admin-columns-pro
-  noroot composer require admin-columns/ac-addon-acf
- 
-  noroot composer config repositories.ds-lazy-load '{"type": "vcs", "url": "git@github.com:digital-swing/ds-lazy-load.git"}'
-  noroot composer require digital-swing/ds-lazy-load
-
-  echo "{"\""bearer"\"": {"\""composer.admincolumns.com"\"": "\""cacc9610e8a4e69daa792372da987ddd"\""}}" > auth.json
-
-  noroot composer config repositories.starter-theme-packages '{"type": "vcs", "url": "git@github.com:digital-swing/starter-theme-packages.git"}'
-  noroot composer require digital-swing/starter-theme-packages:dev-main
-}
-
 generate_configs(){
+  eval cd public_html
   if cmp --silent .env .env.example
   then
     rm -f .env
@@ -144,22 +86,22 @@ generate_configs(){
     sed -i "s/DB_PREFIX='ds_wp_'/DB_PREFIX='${DB_PREFIX}'/" .env
   fi
 
-  git clone git@github.com:digital-swing/movefile.git tempmovefile
-  mv tempmovefile/movefile.yml .
+  sed -i "s/{{ project }}/$project/g" example.code-workspace grumphp.yml phpstan.neon
+  mv example.code-workspace "$project.code-workspace"
 
-  rm -r tempenv tempmovefile
+  rm -r tempenv
 }
 
 install_starter_theme(){
   eval cd public_html/web/app/themes
-  if [ -d $project-theme ]
+  if [ -d "$project-theme" ]
     then
       echo "Theme already installed"
     else
     # Start download theme
     echo "Downloading Starter Theme"
-    git clone git@github.com:digital-swing/starter-theme.git $project-theme
-    eval cd $project-theme
+    git clone git@github.com:digital-swing/starter-theme.git "$project-theme"
+    eval cd "$project-theme"
     noroot composer install && yarn install
     echo "Starter Theme installed"
     # End download theme
@@ -173,21 +115,15 @@ then
 
   # Nginx Logs
   echo "Creating logs"
-  mkdir -p ${VVV_PATH_TO_SITE}/log
-  touch ${VVV_PATH_TO_SITE}/log/error.log
-  touch ${VVV_PATH_TO_SITE}/log/access.log
+  mkdir -p "${VVV_PATH_TO_SITE}/log"
+  touch "${VVV_PATH_TO_SITE}/log/error.log"
+  touch "${VVV_PATH_TO_SITE}/log/access.log"
 
   setup_database
   install_wp
-
-  eval cd public_html
-
-  install_composer_packages
+  install_starter_theme
   generate_configs
 
-  eval cd ..
-
-  install_starter_theme
 fi
 
 # The Vagrant site setup script will restart Nginx for us

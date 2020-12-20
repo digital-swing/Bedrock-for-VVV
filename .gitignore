@@ -1,8 +1,0 @@
-
-/log/
-/provision/vvv-nginx.conf
-/public_html
-*.sublime-project
-*.sublime-workspace
-*.sublime-workspace
-*.code-workspace
