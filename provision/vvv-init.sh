@@ -76,7 +76,7 @@ install_starter_theme(){
     echo "Downloading Starter Theme"
     git clone git@github.com:digital-swing/starter-theme.git "${project}-theme"
     eval cd "${project}-theme"
-    noroot composer install && yarn install
+    # noroot composer install && yarn install
     echo "Starter Theme installed"
     # End download theme
   fi
@@ -144,13 +144,25 @@ maybe_import_test_content() {
     echo " * Test content installed"
   fi
 }
-install_wp() {
+
+download_wp()
+{
   # Download Bedrock
   echo "Installing Bedrock stack using Composer"
-  # TODO: change eval to cd ${VVV_PATH_TO_SITE}/public_html or use mkdir command
-  eval cd .. && git clone git@github.com:digital-swing/bedrock-ds.git "${PUBLIC_DIR}"
+
+  cd "${PUBLIC_DIR_PATH}/.."
+  git clone git@github.com:digital-swing/bedrock-ds.git "${PUBLIC_DIR}"
+
   echo "Bedrock stack installed using Composer"
 
+}
+
+install_packages(){
+  cd ${PUBLIC_DIR_PATH}
+  composer install
+}
+
+install_wp() {
   echo " * Installing WordPress"
   ADMIN_USER=$(get_config_value 'admin_user' "admin")
   ADMIN_PASSWORD=$(get_config_value 'admin_password' "password")
@@ -173,6 +185,7 @@ install_wp() {
     noroot wp plugin delete akismet
     noroot wp plugin delete hello
   fi
+
   wp package install aaemnnosttv/wp-cli-dotenv-command:^2.0
   wp dotenv salts generate
   wp post create --post_type=page --post_title='Styleguide' --post_status=publish
@@ -194,7 +207,19 @@ cd "${VVV_PATH_TO_SITE}"
 setup_database
 setup_nginx_folders
 
-cd ${PUBLIC_DIR_PATH}
+# Install and configure the latest stable version of WordPress
+if [[ ! -f "${PUBLIC_DIR_PATH}/web/wp-config.php" ]]; then
+  download_wp
+fi
+install_packages
+generate_configs
+
+# Install and configure the latest stable version of WordPress
+if [[ ! -f "${PUBLIC_DIR_PATH}/web/wp/wp-load.php" ]]; then
+  update_wp
+fi
+
+cd "${PUBLIC_DIR_PATH}"
 if ! $(noroot wp core is-installed ); then
   echo " * WordPress is present but isn't installed to the database, checking for SQL dumps in wp-content/database.sql or the main backup folder."
   if [ -f "${PUBLIC_DIR_PATH}/web/app/database.sql" ]; then
@@ -209,5 +234,4 @@ else
 fi
 copy_nginx_configs
 install_starter_theme
-generate_configs
 echo " * Site Template provisioner script completed for ${VVV_SITE_NAME}"
