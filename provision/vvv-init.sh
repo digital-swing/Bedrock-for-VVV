@@ -36,8 +36,6 @@ setup_nginx_folders() {
   noroot mkdir -p "${VVV_PATH_TO_SITE}/log"
   noroot touch "${VVV_PATH_TO_SITE}/log/nginx-error.log"
   noroot touch "${VVV_PATH_TO_SITE}/log/nginx-access.log"
-  echo " * Creating the public folder at '${PUBLIC_DIR}' if it doesn't exist already"
-  noroot mkdir -p "${PUBLIC_DIR_PATH}"
 }
 
 
@@ -150,9 +148,12 @@ download_wp()
   # Download Bedrock
   echo "Installing Bedrock stack using Composer"
 
-  cd "${PUBLIC_DIR_PATH}/.."
-  git clone git@github.com:digital-swing/bedrock-ds.git "${PUBLIC_DIR}"
-
+  cd "${VVV_PATH_TO_SITE}"
+  if [ -d "${PUBLIC_DIR}" ] ; then
+    echo "Public directory already installed"
+  else
+    git clone git@github.com:digital-swing/bedrock-ds.git "${PUBLIC_DIR}"
+  fi
   echo "Bedrock stack installed using Composer"
 
 }
@@ -219,7 +220,7 @@ if [[ ! -f "${PUBLIC_DIR_PATH}/web/wp/wp-load.php" ]]; then
   update_wp
 fi
 
-cd "${PUBLIC_DIR_PATH}"
+cd ${PUBLIC_DIR_PATH}
 if ! $(noroot wp core is-installed ); then
   echo " * WordPress is present but isn't installed to the database, checking for SQL dumps in wp-content/database.sql or the main backup folder."
   if [ -f "${PUBLIC_DIR_PATH}/web/app/database.sql" ]; then
