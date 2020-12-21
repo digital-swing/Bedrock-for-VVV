@@ -151,8 +151,11 @@ download_wp()
   echo "Installing Bedrock stack using Composer"
 
   cd "${PUBLIC_DIR_PATH}/.."
-  git clone git@github.com:digital-swing/bedrock-ds.git "${PUBLIC_DIR}"
-
+  if [ -d "${PUBLIC_DIR}" ] ; then
+    echo "Site already installed"
+  else
+    git clone git@github.com:digital-swing/bedrock-ds.git "${PUBLIC_DIR}"
+  fi
   echo "Bedrock stack installed using Composer"
 
 }
@@ -219,7 +222,7 @@ if [[ ! -f "${PUBLIC_DIR_PATH}/web/wp/wp-load.php" ]]; then
   update_wp
 fi
 
-cd "${PUBLIC_DIR_PATH}"
+cd ${PUBLIC_DIR_PATH}
 if ! $(noroot wp core is-installed ); then
   echo " * WordPress is present but isn't installed to the database, checking for SQL dumps in wp-content/database.sql or the main backup folder."
   if [ -f "${PUBLIC_DIR_PATH}/web/app/database.sql" ]; then
