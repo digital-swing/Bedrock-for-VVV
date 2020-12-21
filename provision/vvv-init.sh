@@ -52,15 +52,15 @@ generate_configs(){
   fi
 
   # Replace placeholders with actual project name
-  for FILE in example.code-workspace grumphp.yml phpstan.neon .github/dependabot.yml jsconfig.json
+  for FILE in bedrock-ds.code-workspace grumphp.yml phpstan.neon .github/dependabot.yml jsconfig.json
   do
     if  [[ -f "$FILE" ]] ; then
-      sed -i "s/{{ project }}/$project/g" $FILE
+      sed -i "s/bedrock-ds/$project/g" $FILE
     fi
   done
   
-  if [[ -f "example.code-workspace" ]] && [[ ! -f "$project.code-workspace" ]]  ; then
-    mv example.code-workspace "$project.code-workspace"
+  if [[ -f "bedrock-ds.code-workspace" ]] && [[ ! -f "$project.code-workspace" ]]  ; then
+    mv bedrock-ds.code-workspace "$project.code-workspace"
   fi
 }
 
