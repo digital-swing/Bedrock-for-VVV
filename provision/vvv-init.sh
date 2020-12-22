@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Provision WordPress Stable
 
 set -eo pipefail
@@ -6,28 +6,33 @@ set -eo pipefail
 echo " * Custom site template provisioner ${VVV_SITE_NAME} - downloads and installs a copy of WP stable for testing, building client sites, etc"
 
 # fetch the first host as the primary domain. If none is available, generate a default using the site name
-DB_NAME=$(get_config_value 'db_name' "${VVV_SITE_NAME}")
+DB_NAME=${DB_NAME:-(get_config_value 'db_name' "${VVV_SITE_NAME}")}
 DB_NAME=${DB_NAME//[\\\/\.\<\>\:\"\'\|\?\!\*]/}
-project=$DB_NAME
-DB_PREFIX=$(get_config_value 'db_prefix' 'wp_')
-DOMAIN=$(get_primary_host "${VVV_SITE_NAME}".test)
-PUBLIC_DIR=$(get_config_value 'public_dir' "public_html")
-SITE_TITLE=$(get_config_value 'site_title' "${DOMAIN}")
-WP_LOCALE=$(get_config_value 'locale' 'fr_FR')
-WP_TYPE=$(get_config_value 'wp_type' "single")
-WP_VERSION=$(get_config_value 'wp_version' 'latest')
+project=${project:-DB_NAME}
+DB_PREFIX=${DB_PREFIX:-(get_config_value 'db_prefix' 'wp_')}
+DOMAIN=${DOMAIN:-(get_primary_host "${VVV_SITE_NAME}".test)}
+PUBLIC_DIR=${PUBLIC_DIR:-(get_config_value 'public_dir' "public_html")}
+SITE_TITLE=${SITE_TITLE:-(get_config_value 'site_title' "${DOMAIN}")}
+WP_LOCALE=${WP_LOCALE:-(get_config_value 'locale' 'fr_FR')}
+WP_TYPE=${WP_TYPE:-(get_config_value 'wp_type' "single")}
+WP_VERSION=${WP_VERSION:-(get_config_value 'wp_version' 'latest')}
 
 PUBLIC_DIR_PATH="${VVV_PATH_TO_SITE}"
-if [ ! -z "${PUBLIC_DIR}" ]; then
+if [ -n "${PUBLIC_DIR}" ]; then
   PUBLIC_DIR_PATH="${PUBLIC_DIR_PATH}/${PUBLIC_DIR}"
 fi
+
+#override vagrant norrot function to make it do nothing
+noroot() {
+  "$@";
+}
 
 # Make a database, if we don't already have one
 setup_database() {
   echo -e " * Creating database '${DB_NAME}' (if it's not already there)"
-  mysql -u root --password=root -e "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`"
+  mysql -h 127.0.0.1 -u root --password=root -e "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`"
   echo -e " * Granting the wp user priviledges to the '${DB_NAME}' database"
-  mysql -u root --password=root -e "GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO wp@localhost IDENTIFIED BY 'wp';"
+  mysql -h 127.0.0.1 -u root --password=root -e "GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO wp@localhost IDENTIFIED BY 'wp';"
   echo -e " * DB operations done."
 }
 
@@ -38,14 +43,11 @@ setup_nginx_folders() {
   noroot touch "${VVV_PATH_TO_SITE}/log/nginx-access.log"
 }
 
-
-
 generate_configs(){
   eval cd "${PUBLIC_DIR_PATH}"
-  if [[ ! -f .env ]]
+  if [ ! -f .env ]
   then
     cp .env.example .env
-    ls
     sed -i "s/DB_NAME='example'/DB_NAME='${DB_NAME}'/" .env
     sed -i "s/WP_HOME='http:\/\/example.test'/WP_HOME='http:\/\/${DB_NAME}.test'/" .env
     sed -i "s/DB_PREFIX='ds_wp_'/DB_PREFIX='${DB_PREFIX}'/" .env
@@ -54,12 +56,12 @@ generate_configs(){
   # Replace placeholders with actual project name
   for FILE in bedrock-ds.code-workspace grumphp.yml phpstan.neon .github/dependabot.yml jsconfig.json
   do
-    if  [[ -f "$FILE" ]] ; then
+    if  [ -f "$FILE" ] ; then
       sed -i "s/bedrock-ds/$project/g" $FILE
     fi
   done
-  
-  if [[ -f "bedrock-ds.code-workspace" ]] && [[ ! -f "$project.code-workspace" ]]  ; then
+
+  if [ -f "bedrock-ds.code-workspace" ] && [ ! -f "$project.code-workspace" ]  ; then
     mv bedrock-ds.code-workspace "$project.code-workspace"
   fi
 }
@@ -92,13 +94,13 @@ copy_nginx_configs() {
   echo " * Applying public dir setting to Nginx config"
   noroot sed -i "s#{vvv_public_dir}#/${PUBLIC_DIR}#" "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf"
 
-  LIVE_URL=$(get_config_value 'live_url' '')
-  if [ ! -z "$LIVE_URL" ]; then
+  LIVE_URL=''
+  if [ -n "$LIVE_URL" ]; then
     echo " * Adding support for Live URL redirects to NGINX of the website's media"
     # replace potential protocols, and remove trailing slashes
     LIVE_URL=$(echo "${LIVE_URL}" | sed 's|https://||' | sed 's|http://||'  | sed 's:/*$::')
 
-    redirect_config=$((cat <<END_HEREDOC
+    redirect_config=$( (cat <<END_HEREDOC
 if (!-e \$request_filename) {
   rewrite ^/[_0-9a-zA-Z-]+(/wp-content/uploads/.*) \$1;
 }
@@ -127,8 +129,8 @@ restore_db_backup() {
 }
 
 maybe_import_test_content() {
-  INSTALL_TEST_CONTENT=$(get_config_value 'install_test_content' "")
-  if [ ! -z "${INSTALL_TEST_CONTENT}" ]; then
+  INSTALL_TEST_CONTENT=""
+  if [ -n "${INSTALL_TEST_CONTENT}" ]; then
     echo " * Downloading test content from github.com/poststatus/wptest/master/wptest.xml"
     noroot curl -s https://raw.githubusercontent.com/poststatus/wptest/master/wptest.xml > /tmp/import.xml
     echo " * Installing the wordpress-importer"
@@ -148,7 +150,7 @@ download_wp()
   # Download Bedrock
   echo "Installing Bedrock stack using Composer"
 
-  cd "${VVV_PATH_TO_SITE}"
+  cd "${VVV_PATH_TO_SITE}" || exit
   if [ -d "${PUBLIC_DIR}" ] ; then
     echo "Public directory already installed"
   else
@@ -159,15 +161,15 @@ download_wp()
 }
 
 install_packages(){
-  cd ${PUBLIC_DIR_PATH}
+  cd "${PUBLIC_DIR_PATH}" || exit
   composer install
 }
 
 install_wp() {
   echo " * Installing WordPress"
-  ADMIN_USER=$(get_config_value 'admin_user' "admin")
-  ADMIN_PASSWORD=$(get_config_value 'admin_password' "password")
-  ADMIN_EMAIL=$(get_config_value 'admin_email' "admin@local.test")
+  ADMIN_USER="admin"
+  ADMIN_PASSWORD="password"
+  ADMIN_EMAIL="admin@local.test"
   echo " * Installing using wp core install --url=\"${DOMAIN}\" --title=\"${SITE_TITLE}\" --admin_name=\"${ADMIN_USER}\" --admin_email=\"${ADMIN_EMAIL}\" --admin_password=\"${ADMIN_PASSWORD}\""
   noroot wp core install --url="${DOMAIN}" --title="${SITE_TITLE}" --admin_name="${ADMIN_USER}" --admin_email="${ADMIN_EMAIL}" --admin_password="${ADMIN_PASSWORD}"
   echo " * WordPress was installed, with the username '${ADMIN_USER}', and the password '${ADMIN_PASSWORD}' at '${ADMIN_EMAIL}'"
@@ -180,7 +182,7 @@ install_wp() {
     noroot wp core multisite-install --url="${DOMAIN}" --title="${SITE_TITLE}" --admin_name="${ADMIN_USER}" --admin_email="${ADMIN_EMAIL}" --admin_password="${ADMIN_PASSWORD}"
     echo " * Multisite install complete"
   fi
-  DELETE_DEFAULT_PLUGINS=$(get_config_value 'delete_default_plugins' '')
+  DELETE_DEFAULT_PLUGINS=''
   if [ -n "${DELETE_DEFAULT_PLUGINS}" ]; then
     echo " * Deleting the default plugins akismet and hello dolly"
     noroot wp plugin delete akismet
@@ -193,10 +195,10 @@ install_wp() {
   maybe_import_test_content
 }
 update_wp() {
-  cd ${PUBLIC_DIR_PATH}
-  if [[ $(noroot composer show roots/wordpress | sed -n '/versions/s/^[^0-9]\+\([^,]\+\).*$/\1/p') > "${WP_VERSION}" ]]; then
+  cd "${PUBLIC_DIR_PATH}" || exit
+  if [ "$(noroot composer show roots/wordpress | sed -n '/versions/s/^[^0-9]\+\([^,]\+\).*$/\1/p')" \> "${WP_VERSION}" ]; then
     echo " * Installing an older version '${WP_VERSION}' of WordPress"
-    noroot composer require roots/wordpress:${WP_VERSION}
+    noroot composer require "roots/wordpress:${WP_VERSION}"
   else
     echo " * Updating WordPress '${WP_VERSION}'"
     noroot composer require roots/wordpress
@@ -204,24 +206,26 @@ update_wp() {
   cd ..
 }
 
-cd "${VVV_PATH_TO_SITE}"
-setup_database
+cd "${VVV_PATH_TO_SITE}" || exit
+# setup_database
+
+  echo "$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 setup_nginx_folders
 
 # Install and configure the latest stable version of WordPress
-if [[ ! -f "${PUBLIC_DIR_PATH}/web/wp-config.php" ]]; then
+if [ ! -f "${PUBLIC_DIR_PATH}/web/wp-config.php" ]; then
   download_wp
 fi
-install_packages
+
 generate_configs
+install_packages
 
 # Install and configure the latest stable version of WordPress
-if [[ ! -f "${PUBLIC_DIR_PATH}/web/wp/wp-load.php" ]]; then
+if [ ! -f "${PUBLIC_DIR_PATH}/web/wp/wp-load.php" ]; then
   update_wp
 fi
-
-cd ${PUBLIC_DIR_PATH}
-if ! $(noroot wp core is-installed ); then
+cd "${PUBLIC_DIR_PATH}" || exit
+if ! noroot wp core is-installed ; then
   echo " * WordPress is present but isn't installed to the database, checking for SQL dumps in wp-content/database.sql or the main backup folder."
   if [ -f "${PUBLIC_DIR_PATH}/web/app/database.sql" ]; then
     restore_db_backup "${PUBLIC_DIR_PATH}/web/app/database.sql"
