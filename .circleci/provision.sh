@@ -2,7 +2,7 @@
 # Provision WordPress Stable
 
 # shellcheck disable=SC1091
-source ./provision-helpers.sh
+source ./.circleci/provision-helpers.sh
 
 echo " * Custom site template provisioner ${VVV_SITE_NAME} - downloads and installs a copy of WP stable for testing, building client sites, etc"
 
@@ -12,7 +12,7 @@ if [ -n "${PUBLIC_DIR}" ]; then
 fi
 
 #override vagrant norrot function to make it do nothing
-function noroot() {
+noroot() {
   "$@";
 }
 
