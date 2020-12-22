@@ -55,8 +55,11 @@ jobs:
             chmod +x wp-cli.phar
             sudo mv wp-cli.phar /usr/local/bin/wp
             which wp
+      - run:
           name: Provision script
-          command: sh .circleci/provision.sh
+          command: |
+            source ./.circleci/provision-helpers.sh
+            bash provision/vvv-init.sh
 
 workflows:
   install_new_site:
