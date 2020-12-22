@@ -1,7 +1,5 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Provision WordPress Stable
-
-set -eo pipefail
 
 source ".circleci/provision-helpers.sh"
 
