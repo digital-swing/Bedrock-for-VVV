@@ -14,9 +14,6 @@ export PURPLE="\033[38;5;5m" # 129m"
 export CRESET="\033[0m"
 export BOLD="\033[1m"
 
-
-VVV_CONFIG=vvv-custom.yml
-
 export VVV_CONFIG
 export VVV_CURRENT_LOG_FILE=""
 

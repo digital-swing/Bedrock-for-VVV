@@ -6,6 +6,7 @@ jobs:
     docker:
       - image: circleci/php:7.3
         environment:
+          VVV_PATH_TO_SITE: .
           VVV_SITE_NAME: bedrock-ds
           DB_NAME: bedrock-ds
           project: bedrock-ds
