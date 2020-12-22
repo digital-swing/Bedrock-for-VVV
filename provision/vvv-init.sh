@@ -207,9 +207,7 @@ update_wp() {
 }
 
 cd "${VVV_PATH_TO_SITE}" || exit
-# setup_database
-
-  echo "$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+setup_database
 setup_nginx_folders
 
 # Install and configure the latest stable version of WordPress
