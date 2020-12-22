@@ -11,6 +11,11 @@ if [ -n "${PUBLIC_DIR}" ]; then
   PUBLIC_DIR_PATH="${PUBLIC_DIR_PATH}/${PUBLIC_DIR}"
 fi
 
+#override vagrant norrot function to make it do nothing
+function noroot() {
+  "$@";
+}
+
 # Make a database, if we don't already have one
 setup_database() {
   echo -e " * Creating database '${DB_NAME}' (if it's not already there)"
