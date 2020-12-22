@@ -25,8 +25,8 @@ jobs:
         environment:
           MYSQL_ROOT_PASSWORD: rootpw
           MYSQL_DATABASE: bedrock-ds
-          MYSQL_USER: wp
-          MYSQL_PASSWORD: wp
+          MYSQL_USER: root
+          MYSQL_PASSWORD: root
     steps:
       - checkout
       - run: sudo apt update # PHP CircleCI 2.0 Configuration File# PHP CircleCI 2.0 Configuration File sudo apt install zlib1g-dev libsqlite3-dev
