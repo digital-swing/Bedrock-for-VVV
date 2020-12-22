@@ -14,9 +14,9 @@ fi
 # Make a database, if we don't already have one
 setup_database() {
   echo -e " * Creating database '${DB_NAME}' (if it's not already there)"
-  mysql -u root --password=root -e "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`"
+  mysql -h 127.0.0.1 -u root --password=root -e "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`"
   echo -e " * Granting the wp user priviledges to the '${DB_NAME}' database"
-  mysql -u root --password=root -e "GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO wp@localhost IDENTIFIED BY 'wp';"
+  mysql -h 127.0.0.1 -u root --password=root -e "GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO wp@localhost IDENTIFIED BY 'wp';"
   echo -e " * DB operations done."
 }
 
