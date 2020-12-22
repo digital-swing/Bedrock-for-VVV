@@ -30,6 +30,14 @@ jobs:
           MYSQL_PASSWORD: wp
     steps:
       - checkout
+      - run:
+          name: Add deploy host to known_hosts
+          command: |
+            mkdir -p ~/.ssh
+            touch ~/.ssh/known_hosts
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+            echo "$PRIV_KEY" | base64 --decode > /tmp/my.key && chmod 400 /tmp/my.key && ssh-add -k /tmp/my.key
+
       - run: sudo apt update # PHP CircleCI 2.0 Configuration File# PHP CircleCI 2.0 Configuration File sudo apt install zlib1g-dev libsqlite3-dev
       - run: sudo docker-php-ext-install zip bcmath
       - run: sudo apt-get install default-mysql-client
