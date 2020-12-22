@@ -6,7 +6,7 @@ jobs:
     docker:
       - image: circleci/php:7.3
         environment:
-          VVV_PATH_TO_SITE: .
+          VVV_PATH_TO_SITE: /home/circleci/project
           VVV_SITE_NAME: bedrock-ds
           DB_NAME: bedrock-ds
           project: bedrock-ds
@@ -17,6 +17,7 @@ jobs:
           WP_LOCALE: fr_FR
           WP_TYPE: single
           WP_VERSION: latest
+
       # Service container image available at `host: localhost`
 
       - image: circleci/mysql:5.7-ram
