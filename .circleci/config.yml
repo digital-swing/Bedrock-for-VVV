@@ -49,6 +49,12 @@ jobs:
           command: |
             sudo apt-get install default-mysql-client
       - run:
+          name: Install WP-CLI
+          command: |
+            curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+            chmod +x wp-cli.phar
+            sudo mv wp-cli.phar /usr/local/bin/wp
+            which wp
           name: Provision script
           command: sh .circleci/provision.sh
 
