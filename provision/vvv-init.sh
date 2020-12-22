@@ -189,10 +189,15 @@ install_wp() {
     noroot wp plugin delete hello
   fi
 
+  echo " * Installing dotenv wp-cli command"
   wp package install aaemnnosttv/wp-cli-dotenv-command:^2.0
+  echo " * Generating salts keys"
   wp dotenv salts generate
+  echo " * Creating Styleguide page"
   wp post create --post_type=page --post_title='Styleguide' --post_status=publish
+  echo " * Maybe importing test content"
   maybe_import_test_content
+  echo " * Wordpress install done"
 }
 update_wp() {
   cd "${PUBLIC_DIR_PATH}" || exit
