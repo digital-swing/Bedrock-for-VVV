@@ -190,7 +190,7 @@ install_wp() {
   fi
 
   echo " * Installing dotenv wp-cli command"
-  wp package install aaemnnosttv/wp-cli-dotenv-command:^2.0
+  php -d memory_limit=1G "$(which wp)" package install aaemnnosttv/wp-cli-dotenv-command:^2.0
   echo " * Generating salts keys"
   wp dotenv salts generate
   echo " * Creating Styleguide page"
