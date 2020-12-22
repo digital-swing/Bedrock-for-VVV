@@ -49,7 +49,7 @@ jobs:
             sudo apt-get install default-mysql-client
       - run:
           name: Provision script
-          command: .circleci/provision.sh
+          command: sh .circleci/provision.sh
 
 workflows:
   install_new_site:
