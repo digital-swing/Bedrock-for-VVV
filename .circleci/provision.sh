@@ -1,15 +1,13 @@
 #!/bin/bash
 # Provision WordPress Stable
 
-source ".circleci/provision-helpers.sh"
-
-
+# shellcheck disable=SC1091
+source ./provision-helpers.sh
 
 echo " * Custom site template provisioner ${VVV_SITE_NAME} - downloads and installs a copy of WP stable for testing, building client sites, etc"
 
-
 PUBLIC_DIR_PATH="${VVV_PATH_TO_SITE}"
-if [ ! -z "${PUBLIC_DIR}" ]; then
+if [ -n "${PUBLIC_DIR}" ]; then
   PUBLIC_DIR_PATH="${PUBLIC_DIR_PATH}/${PUBLIC_DIR}"
 fi
 
@@ -82,12 +80,12 @@ copy_nginx_configs() {
   noroot sed -i "s#{vvv_public_dir}#/${PUBLIC_DIR}#" "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf"
 
   LIVE_URL=''
-  if [ ! -z "$LIVE_URL" ]; then
+  if [ -n "$LIVE_URL" ]; then
     echo " * Adding support for Live URL redirects to NGINX of the website's media"
     # replace potential protocols, and remove trailing slashes
     LIVE_URL=$(echo "${LIVE_URL}" | sed 's|https://||' | sed 's|http://||'  | sed 's:/*$::')
 
-    redirect_config=$((cat <<END_HEREDOC
+    redirect_config=$( (cat <<END_HEREDOC
 if (!-e \$request_filename) {
   rewrite ^/[_0-9a-zA-Z-]+(/wp-content/uploads/.*) \$1;
 }
@@ -117,7 +115,7 @@ restore_db_backup() {
 
 maybe_import_test_content() {
   INSTALL_TEST_CONTENT=""
-  if [ ! -z "${INSTALL_TEST_CONTENT}" ]; then
+  if [ -n "${INSTALL_TEST_CONTENT}" ]; then
     echo " * Downloading test content from github.com/poststatus/wptest/master/wptest.xml"
     noroot curl -s https://raw.githubusercontent.com/poststatus/wptest/master/wptest.xml > /tmp/import.xml
     echo " * Installing the wordpress-importer"
@@ -137,7 +135,7 @@ download_wp()
   # Download Bedrock
   echo "Installing Bedrock stack using Composer"
 
-  cd "${VVV_PATH_TO_SITE}"
+  cd "${VVV_PATH_TO_SITE}" || exit
   if [ -d "${PUBLIC_DIR}" ] ; then
     echo "Public directory already installed"
   else
@@ -148,14 +146,14 @@ download_wp()
 }
 
 install_packages(){
-  cd ${PUBLIC_DIR_PATH}
+  cd "${PUBLIC_DIR_PATH}" || exit
   composer install
 }
 
 install_wp() {
   echo " * Installing WordPress"
-  ADMIN_USER= "admin"
-  ADMIN_PASSWORD= "password"
+  ADMIN_USER="admin"
+  ADMIN_PASSWORD="password"
   ADMIN_EMAIL="admin@local.test"
   echo " * Installing using wp core install --url=\"${DOMAIN}\" --title=\"${SITE_TITLE}\" --admin_name=\"${ADMIN_USER}\" --admin_email=\"${ADMIN_EMAIL}\" --admin_password=\"${ADMIN_PASSWORD}\""
   noroot wp core install --url="${DOMAIN}" --title="${SITE_TITLE}" --admin_name="${ADMIN_USER}" --admin_email="${ADMIN_EMAIL}" --admin_password="${ADMIN_PASSWORD}"
@@ -182,10 +180,10 @@ install_wp() {
   maybe_import_test_content
 }
 update_wp() {
-  cd ${PUBLIC_DIR_PATH}
+  cd "${PUBLIC_DIR_PATH}" || exit
   if [[ $(noroot composer show roots/wordpress | sed -n '/versions/s/^[^0-9]\+\([^,]\+\).*$/\1/p') > "${WP_VERSION}" ]]; then
     echo " * Installing an older version '${WP_VERSION}' of WordPress"
-    noroot composer require roots/wordpress:${WP_VERSION}
+    noroot composer require "roots/wordpress:${WP_VERSION}"
   else
     echo " * Updating WordPress '${WP_VERSION}'"
     noroot composer require roots/wordpress
@@ -193,7 +191,7 @@ update_wp() {
   cd ..
 }
 
-cd "${VVV_PATH_TO_SITE}"
+cd "${VVV_PATH_TO_SITE}" || exit
 setup_database
 setup_nginx_folders
 
@@ -209,8 +207,8 @@ if [[ ! -f "${PUBLIC_DIR_PATH}/web/wp/wp-load.php" ]]; then
   update_wp
 fi
 
-cd ${PUBLIC_DIR_PATH}
-if ! $(noroot wp core is-installed ); then
+cd "${PUBLIC_DIR_PATH}" || exit
+if ! noroot wp core is-installed ; then
   echo " * WordPress is present but isn't installed to the database, checking for SQL dumps in wp-content/database.sql or the main backup folder."
   if [ -f "${PUBLIC_DIR_PATH}/web/app/database.sql" ]; then
     restore_db_backup "${PUBLIC_DIR_PATH}/web/app/database.sql"
