@@ -23,9 +23,9 @@ fi
 echo " * Custom site template provisioner ${VVV_SITE_NAME} - downloads and installs a copy of WP stable for testing, building client sites, etc"
 
 #override vagrant norrot function to make it do nothing
-noroot() {
-  "$@";
-}
+# noroot() {
+#   "$@";
+# }
 
 # Make a database, if we don't already have one
 setup_database() {
