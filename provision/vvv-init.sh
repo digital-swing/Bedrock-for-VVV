@@ -23,9 +23,9 @@ fi
 echo " * Custom site template provisioner ${VVV_SITE_NAME} - downloads and installs a copy of WP stable for testing, building client sites, etc"
 
 #override vagrant norrot function to make it do nothing
-# noroot() {
-#   "$@";
-# }
+noroot() {
+  "$@";
+}
 
 # Make a database, if we don't already have one
 setup_database() {
@@ -47,10 +47,10 @@ generate_configs(){
   eval cd "${PUBLIC_DIR_PATH}"
   if [ ! -f .env ]
   then
-    cp .env.example .env
-    sed -i "s/DB_NAME='example'/DB_NAME='${DB_NAME}'/" .env
-    sed -i "s/WP_HOME='http:\/\/example.test'/WP_HOME='http:\/\/${DB_NAME}.test'/" .env
-    sed -i "s/DB_PREFIX='ds_wp_'/DB_PREFIX='${DB_PREFIX}'/" .env
+    noroot cp .env.example .env
+    noroot sed -i "s/DB_NAME='example'/DB_NAME='${DB_NAME}'/" .env
+    noroot sed -i "s/WP_HOME='http:\/\/example.test'/WP_HOME='http:\/\/${DB_NAME}.test'/" .env
+    noroot sed -i "s/DB_PREFIX='ds_wp_'/DB_PREFIX='${DB_PREFIX}'/" .env
   fi
 
   # Replace placeholders with actual project name
@@ -74,7 +74,7 @@ install_starter_theme(){
     else
     # Start download theme
     echo "Downloading Starter Theme"
-    git clone git@github.com:digital-swing/starter-theme.git "${project}-theme"
+    noroot git clone git@github.com:digital-swing/starter-theme.git "${project}-theme"
     eval cd "${project}-theme"
     # noroot composer install && yarn install
     echo "Starter Theme installed"
@@ -187,9 +187,9 @@ install_wp() {
   echo " * Installing dotenv wp-cli command"
   php -d memory_limit=1G "$(which wp)" package install aaemnnosttv/wp-cli-dotenv-command:^2.0
   echo " * Generating salts keys"
-  wp dotenv salts generate
+  noroot wp dotenv salts generate
   echo " * Creating Styleguide page"
-  wp post create --post_type=page --post_title='Styleguide' --post_status=publish
+  noroot wp post create --post_type=page --post_title='Styleguide' --post_status=publish
   echo " * Maybe importing test content"
   maybe_import_test_content
   echo " * Wordpress install done"
