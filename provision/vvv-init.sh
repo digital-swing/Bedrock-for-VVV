@@ -6,7 +6,7 @@ set -eo pipefail
 # fetch the first host as the primary domain. If none is available, generate a default using the site name
 DB_NAME=${DB_NAME:-$(get_config_value 'db_name' "${VVV_SITE_NAME}")}
 DB_NAME=${DB_NAME//[\\\/\.\<\>\:\"\'\|\?\!\*]/}
-project=${project:-DB_NAME}
+project=${project:-$DB_NAME}
 DB_PREFIX=${DB_PREFIX:-$(get_config_value 'db_prefix' 'wp_')}
 DOMAIN=${DOMAIN:-$(get_primary_host "${VVV_SITE_NAME}".test)}
 PUBLIC_DIR=${PUBLIC_DIR:-$(get_config_value 'public_dir' "public_html")}
