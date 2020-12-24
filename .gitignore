@@ -1,2 +1,3 @@
 *.log
 public_html
+*.code-workspace
