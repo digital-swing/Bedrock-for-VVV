@@ -3,8 +3,6 @@
 
 set -eo pipefail
 
-echo " * Custom site template provisioner ${VVV_SITE_NAME} - downloads and installs a copy of WP stable for testing, building client sites, etc"
-
 # fetch the first host as the primary domain. If none is available, generate a default using the site name
 DB_NAME=${DB_NAME:-(get_config_value 'db_name' "${VVV_SITE_NAME}")}
 DB_NAME=${DB_NAME//[\\\/\.\<\>\:\"\'\|\?\!\*]/}
@@ -21,6 +19,8 @@ PUBLIC_DIR_PATH="${VVV_PATH_TO_SITE}"
 if [ -n "${PUBLIC_DIR}" ]; then
   PUBLIC_DIR_PATH="${PUBLIC_DIR_PATH}/${PUBLIC_DIR}"
 fi
+
+echo " * Custom site template provisioner ${VVV_SITE_NAME} - downloads and installs a copy of WP stable for testing, building client sites, etc"
 
 #override vagrant norrot function to make it do nothing
 noroot() {
@@ -145,7 +145,7 @@ maybe_import_test_content() {
   fi
 }
 
-download_wp()
+download_bedrock_ds()
 {
   # Download Bedrock
   echo "Installing Bedrock stack using Composer"
@@ -158,11 +158,6 @@ download_wp()
   fi
   echo "Bedrock stack installed using Composer"
 
-}
-
-install_packages(){
-  cd "${PUBLIC_DIR_PATH}" || exit
-  composer install
 }
 
 install_wp() {
@@ -217,11 +212,10 @@ setup_nginx_folders
 
 # Install and configure the latest stable version of WordPress
 if [ ! -f "${PUBLIC_DIR_PATH}/web/wp-config.php" ]; then
-  download_wp
+  download_bedrock_ds
 fi
 
 generate_configs
-install_packages
 
 # Install and configure the latest stable version of WordPress
 if [ ! -f "${PUBLIC_DIR_PATH}/web/wp/wp-load.php" ]; then
