@@ -4,16 +4,16 @@
 set -eo pipefail
 
 # fetch the first host as the primary domain. If none is available, generate a default using the site name
-DB_NAME=${DB_NAME:-(get_config_value 'db_name' "${VVV_SITE_NAME}")}
+DB_NAME=${DB_NAME:-$(get_config_value 'db_name' "${VVV_SITE_NAME}")}
 DB_NAME=${DB_NAME//[\\\/\.\<\>\:\"\'\|\?\!\*]/}
 project=${project:-DB_NAME}
-DB_PREFIX=${DB_PREFIX:-(get_config_value 'db_prefix' 'wp_')}
-DOMAIN=${DOMAIN:-(get_primary_host "${VVV_SITE_NAME}".test)}
-PUBLIC_DIR=${PUBLIC_DIR:-(get_config_value 'public_dir' "public_html")}
-SITE_TITLE=${SITE_TITLE:-(get_config_value 'site_title' "${DOMAIN}")}
-WP_LOCALE=${WP_LOCALE:-(get_config_value 'locale' 'fr_FR')}
-WP_TYPE=${WP_TYPE:-(get_config_value 'wp_type' "single")}
-WP_VERSION=${WP_VERSION:-(get_config_value 'wp_version' 'latest')}
+DB_PREFIX=${DB_PREFIX:-$(get_config_value 'db_prefix' 'wp_')}
+DOMAIN=${DOMAIN:-$(get_primary_host "${VVV_SITE_NAME}".test)}
+PUBLIC_DIR=${PUBLIC_DIR:-$(get_config_value 'public_dir' "public_html")}
+SITE_TITLE=${SITE_TITLE:-$(get_config_value 'site_title' "${DOMAIN}")}
+WP_LOCALE=${WP_LOCALE:-$(get_config_value 'locale' 'fr_FR')}
+WP_TYPE=${WP_TYPE:-$(get_config_value 'wp_type' "single")}
+WP_VERSION=${WP_VERSION:-$(get_config_value 'wp_version' 'latest')}
 
 PUBLIC_DIR_PATH="${VVV_PATH_TO_SITE}"
 if [ -n "${PUBLIC_DIR}" ]; then
