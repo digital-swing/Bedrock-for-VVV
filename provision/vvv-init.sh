@@ -121,11 +121,11 @@ END_HEREDOC
 }
 restore_db_backup() {
   echo " * Found a database backup at ${1}. Restoring the site"
-  noroot wp config set DB_USER "wp"
-  noroot wp config set DB_PASSWORD "wp"
-  noroot wp config set DB_HOST "localhost"
-  noroot wp config set DB_NAME "${DB_NAME}"
-  noroot wp config set table_prefix "${DB_PREFIX}"
+  # noroot wp config set DB_USER "wp"
+  # noroot wp config set DB_PASSWORD "wp"
+  # noroot wp config set DB_HOST "localhost"
+  # noroot wp config set DB_NAME "${DB_NAME}"
+  # noroot wp config set table_prefix "${DB_PREFIX}"
   noroot wp db import "${1}"
   echo " * Installed database backup"
 }
