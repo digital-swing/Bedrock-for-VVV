@@ -44,12 +44,14 @@ setup_nginx_folders() {
 }
 
 generate_configs(){
+  echo " * Generating config files"
+  echo " * Replacing dummy content with project specific ones"
   eval cd "${PUBLIC_DIR_PATH}"
   if [ ! -f .env ]
   then
     noroot cp .env.example .env
-    noroot sed -i "s/DB_NAME='example'/DB_NAME='${DB_NAME}'/" .env
-    noroot sed -i "s/WP_HOME='http:\/\/example.test'/WP_HOME='http:\/\/${DB_NAME}.test'/" .env
+    noroot sed -i "s/DB_NAME='bedrock-ds'/DB_NAME='${DB_NAME}'/" .env
+    noroot sed -i "s/WP_HOME='http:\/\/bedrock-ds.test'/WP_HOME='http:\/\/${DB_NAME}.test'/" .env
     noroot sed -i "s/DB_PREFIX='ds_wp_'/DB_PREFIX='${DB_PREFIX}'/" .env
   fi
 
@@ -66,21 +68,21 @@ generate_configs(){
   fi
 }
 
-install_starter_theme(){
-  eval cd "${PUBLIC_DIR_PATH}/web/app/themes"
-  if [ -d "${project}-theme" ]
-    then
-      echo "Theme already installed"
-    else
-    # Start download theme
-    echo "Downloading Starter Theme"
-    noroot git clone git@github.com:digital-swing/starter-theme.git "${project}-theme"
-    eval cd "${project}-theme"
-    # noroot composer install && yarn install
-    echo "Starter Theme installed"
-    # End download theme
-  fi
-}
+# install_starter_theme(){
+#   eval cd "${PUBLIC_DIR_PATH}/web/app/themes"
+#   if [ -d "${project}-theme" ]
+#     then
+#       echo "Theme already installed"
+#     else
+#     # Start download theme
+#     echo "Downloading Starter Theme"
+#     noroot git clone git@github.com:digital-swing/starter-theme.git "${project}-theme"
+#     eval cd "${project}-theme"
+#     # noroot composer install && yarn install
+#     echo "Starter Theme installed"
+#     # End download theme
+#   fi
+# }
 
 copy_nginx_configs() {
   echo " * Copying the sites Nginx config template"
@@ -162,9 +164,10 @@ download_bedrock_ds()
 
 install_wp() {
   echo " * Installing WordPress"
-  ADMIN_USER="admin"
-  ADMIN_PASSWORD="password"
-  ADMIN_EMAIL="admin@local.test"
+  # TODO cacher ces identifiants
+  ADMIN_USER="DigitalSwing"
+  ADMIN_PASSWORD="consolidou06"
+  ADMIN_EMAIL="dev@digital-swing.com"
   echo " * Installing using wp core install --url=\"${DOMAIN}\" --title=\"${SITE_TITLE}\" --admin_name=\"${ADMIN_USER}\" --admin_email=\"${ADMIN_EMAIL}\" --admin_password=\"${ADMIN_PASSWORD}\""
   noroot wp core install --url="${DOMAIN}" --title="${SITE_TITLE}" --admin_name="${ADMIN_USER}" --admin_email="${ADMIN_EMAIL}" --admin_password="${ADMIN_PASSWORD}"
   echo " * WordPress was installed, with the username '${ADMIN_USER}', and the password '${ADMIN_PASSWORD}' at '${ADMIN_EMAIL}'"
@@ -200,8 +203,9 @@ update_wp() {
     echo " * Installing an older version '${WP_VERSION}' of WordPress"
     noroot composer require "roots/wordpress:${WP_VERSION}"
   else
-    echo " * Updating WordPress '${WP_VERSION}'"
-    noroot composer require roots/wordpress
+  # TODO do nothing if current installed version is up to date
+      echo " * Updating WordPress '${WP_VERSION}'"
+      noroot composer require roots/wordpress
   fi
   cd ..
 }
@@ -235,5 +239,5 @@ else
   update_wp
 fi
 copy_nginx_configs
-install_starter_theme
+# install_starter_theme
 echo " * Site Template provisioner script completed for ${VVV_SITE_NAME}"
