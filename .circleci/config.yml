@@ -84,7 +84,7 @@ jobs:
       - setup_environment
       - run:
           name: Copy dummy database backup
-          command: mkdir -p /srv/database/backups && cp .circleci/test-provisioning.sql /srv/database/backups/test-provisioning.sql
+          command: sudo mkdir -p /srv/database/backups && cp .circleci/test-provisioning.sql /srv/database/backups/test-provisioning.sql
       - run:
           name: Provision script
           command: |
