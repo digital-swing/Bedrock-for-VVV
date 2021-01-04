@@ -7,13 +7,13 @@ jobs:
       - image: circleci/php:7.3
         environment:
           VVV_PATH_TO_SITE: /home/circleci/project
-          VVV_SITE_NAME: bedrock-ds
-          DB_NAME: bedrock-ds
-          project: bedrock-ds
+          VVV_SITE_NAME: test-provisioning
+          DB_NAME: test-provisioning
+          project: test-provisioning
           DB_PREFIX: ds_wp_
-          DOMAIN: bedrock-ds.test
+          DOMAIN: test-provisioning.test
           PUBLIC_DIR: public_html
-          SITE_TITLE: bedrock-ds.test
+          SITE_TITLE: test-provisioning.test
           WP_LOCALE: fr_FR
           WP_TYPE: single
           WP_VERSION: latest
@@ -26,7 +26,7 @@ jobs:
         #   password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
         environment:
           MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: bedrock-ds
+          MYSQL_DATABASE: test-provisioning
           MYSQL_USER: wp
           MYSQL_PASSWORD: wp
     steps:
