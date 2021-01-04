@@ -1,8 +1,7 @@
 version: 2.1
 
-jobs:
-  provision:
-    description: Provisions wordpress and starter theme
+executors:
+  base:
     docker:
       - image: circleci/php:7.3
         environment:
@@ -29,8 +28,9 @@ jobs:
           MYSQL_DATABASE: test-provisioning
           MYSQL_USER: wp
           MYSQL_PASSWORD: wp
+commands:
+  setup_environment:
     steps:
-      - checkout
       - run:
           name: Add deploy host to known_hosts
           command: |
@@ -64,13 +64,34 @@ jobs:
             chmod +x wp-cli.phar
             sudo mv wp-cli.phar /usr/local/bin/wp
             which wp
+jobs:
+  provision_without_db_restore:
+    description: Provisions wordpress and starter theme
+    executor: base
+    steps:
+      - checkout
+      - setup_environment
       - run:
           name: Provision script
           command: |
             source ./.circleci/provision-helpers.sh
             bash provision/vvv-init.sh
-
+  provision_with_db_restore:
+    description: Provisions wordpress and starter theme
+    executor: base
+    steps:
+      - checkout
+      - setup_environment
+      - run:
+          name: Copy dummy database backup
+          command: cp .circleci/test-provisioning.sql /srv/database/backups/test-provisioning.sql
+      - run:
+          name: Provision script
+          command: |
+            source ./.circleci/provision-helpers.sh
+            bash provision/vvv-init.sh
 workflows:
   install_new_site:
     jobs:
-      - provision
+      - provision_without_db_restore
+      - provision_with_db_restore
