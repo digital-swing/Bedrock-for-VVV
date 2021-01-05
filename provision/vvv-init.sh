@@ -7,7 +7,7 @@ set -eo pipefail
 DB_NAME=${DB_NAME:-$(get_config_value 'db_name' "${VVV_SITE_NAME}")}
 DB_NAME=${DB_NAME//[\\\/\.\<\>\:\"\'\|\?\!\*]/}
 project=${project:-$DB_NAME}
-DB_PREFIX=${DB_PREFIX:-$(get_config_value 'db_prefix' 'wp_')}
+DB_PREFIX=${DB_PREFIX:-$(get_config_value 'db_prefix' 'ds_wp_')}
 DOMAIN=${DOMAIN:-$(get_primary_host "${VVV_SITE_NAME}".test)}
 PUBLIC_DIR=${PUBLIC_DIR:-$(get_config_value 'public_dir' "public_html")}
 SITE_TITLE=${SITE_TITLE:-$(get_config_value 'site_title' "${DOMAIN}")}
@@ -50,16 +50,14 @@ generate_configs(){
   if [ ! -f .env ]
   then
     noroot cp .env.example .env
-    noroot sed -i "s/DB_NAME='bedrock-ds'/DB_NAME='${DB_NAME}'/" .env
-    noroot sed -i "s/WP_HOME='http:\/\/bedrock-ds.test'/WP_HOME='http:\/\/${DB_NAME}.test'/" .env
-    noroot sed -i "s/DB_PREFIX='ds_wp_'/DB_PREFIX='${DB_PREFIX}'/" .env
   fi
 
   # Replace placeholders with actual project name
-  for FILE in bedrock-ds.code-workspace grumphp.yml phpstan.neon .github/dependabot.yml jsconfig.json
+  for FILE in bedrock-ds.code-workspace grumphp.yml phpstan.neon .github/dependabot.yml jsconfig.json .env .env.testing
   do
     if  [ -f "$FILE" ] ; then
       sed -i "s/bedrock-ds/$project/g" $FILE
+      sed -i "s/ds_wp_/$DB_PREFIX/g" $FILE
     fi
   done
 
