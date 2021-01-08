@@ -156,6 +156,7 @@ download_bedrock_ds()
   else
     git clone git@github.com:digital-swing/bedrock-ds.git "${PUBLIC_DIR}"
   fi
+  rm -rf .git .circleci ./*.code-workspace
   echo "Bedrock stack installed using Composer"
 
 }
